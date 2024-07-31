@@ -46,6 +46,7 @@ _update_and_delete_help['log-level'] = (
 )
 def update(
     ctx,
+    dbtexecpath="dbt",
     resource_type=None,
     select=None,
     models=None,
@@ -100,6 +101,7 @@ def update(
     """
     common_dbt_kwargs, transformed_ls_results = _initiate_alterations(
         ctx,
+        dbtexecpath=dbtexecpath,
         resource_type=resource_type,
         select=select,
         models=models,
@@ -128,6 +130,7 @@ def update(
 )
 def delete(
     ctx,
+    dbtexecpath="dbt",
     resource_type=None,
     select=None,
     models=None,
@@ -176,6 +179,7 @@ def delete(
     """
     _, transformed_ls_results = _initiate_alterations(
         ctx,
+        dbtexecpath=dbtexecpath,
         resource_type=resource_type,
         select=select,
         models=models,
@@ -232,6 +236,7 @@ def _read_manifest(target_path):
 )
 def migrate(
     ctx,
+    dbtexecpath="dbt",
     resource_type=None,
     select=None,
     models=None,
@@ -285,6 +290,7 @@ def migrate(
     # path.
     _, transformed_ls_results = _initiate_alterations(
         ctx,
+        dbtexecpath=dbtexecpath,
         resource_type=resource_type,
         select=select,
         models=models,
@@ -475,6 +481,7 @@ def _initiate_alterations(ctx, **kwargs):
     project_dir = kwargs.get('project_dir')
     _utils.get_project_info(ctx, project_dir=project_dir)
     common_dbt_kwargs = {
+        'dbtexecpath': kwargs.get('dbtexecpath'),
         'project_dir': project_dir or ctx.config['project_path'],
         'profiles_dir': kwargs.get('profiles_dir'),
         'profile': kwargs.get('profile'),

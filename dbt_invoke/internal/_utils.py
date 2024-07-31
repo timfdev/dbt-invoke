@@ -38,6 +38,7 @@ DBT_LS_ARG_HELP = (
     'An argument for listing dbt resources (run "dbt ls --help" for details)'
 )
 DBT_LS_ARGS = {
+    'dbtexecpath': {'help': DBT_LS_ARG_HELP, 'resource_selector': False},
     'resource_type': {'help': DBT_LS_ARG_HELP, 'resource_selector': True},
     'select': {'help': DBT_LS_ARG_HELP, 'resource_selector': True},
     'models': {'help': DBT_LS_ARG_HELP, 'resource_selector': True},
@@ -142,6 +143,7 @@ def get_project_info(ctx, project_dir=None):
 
 def dbt_ls(
     ctx,
+    dbtexecpath="dbt",
     supported_resource_types=None,
     hide=True,
     output='json',
@@ -184,7 +186,7 @@ def dbt_ls(
     arguments = get_cli_kwargs(**kwargs)
     dbt_command_cli_args = f'{default_arguments} {arguments} --output {output}'
     dbt_global_cli_args = get_cli_kwargs(**DBT_GLOBAL_ARGS)
-    command = f"dbt {dbt_global_cli_args} ls {dbt_command_cli_args}"
+    command = f"{dbtexecpath} {dbt_global_cli_args} ls {dbt_command_cli_args}"
     logger.debug(f'Running command: {command}')
     result = ctx.run(command, hide=hide)
     result_stdout = escape_ansi(result.stdout)
@@ -239,6 +241,7 @@ def get_cli_kwargs(**kwargs):
 def dbt_run_operation(
     ctx,
     macro_name,
+    dbtexecpath="dbt",
     project_dir=None,
     profiles_dir=None,
     profile=None,
@@ -297,7 +300,7 @@ def dbt_run_operation(
         macro_kwargs = macro_kwargs.replace("'", """'"'"'""")
         macro_kwargs = f"'{macro_kwargs}'"
     command = (
-        f"dbt {dbt_global_cli_args} run-operation {dbt_command_cli_args}"
+        f"{dbtexecpath} {dbt_global_cli_args} run-operation {dbt_command_cli_args}"
         f" {macro_name} --args {macro_kwargs}"
     )
     logger.debug(f'Running command: {command}')

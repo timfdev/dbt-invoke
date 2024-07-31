@@ -16,3 +16,6 @@ analysis-paths:
 
 snapshots:
   +target_schema: main
+
+flags:
+  send_anonymous_usage_stats: False

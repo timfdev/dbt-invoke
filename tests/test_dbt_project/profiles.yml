@@ -1,6 +1,3 @@
-config:
-  send_anonymous_usage_stats: False
-
 dbt-duckdb:
   target: "{{ env_var('TARGET', 'default') }}"
   outputs:
