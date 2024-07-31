@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import platform
 import re
+import os
 from dbt.task.base import get_nearest_project_dir
 
 try:
@@ -364,23 +365,31 @@ def add_macro(ctx, macro_name, logger=None):
     """
     if not logger:
         logger = get_logger('')
+
+    auto_confirm = os.getenv('AUTO_CONFIRM_MACRO_ADDITION', 'n').lower()
+
     location = Path(ctx.config['macro_paths'][0], f'{macro_name}.sql')
     logger.warning(
         f'This command requires the following macro:'
         f'\n{get_macro(macro_name)}'
     )
-    question = (
-        f'Would you like to add the macro "{macro_name}"'
-        f' to the following location?:\n{location}'
-    )
-    prompt = (
-        'Please enter "y" to confirm macro addition,'
-        ' "n" to abort,'
-        ' or "a" to provide an alternate location.'
-    )
-    add_confirmation = input(f'{question}\n{prompt}\n')
-    while add_confirmation.lower() not in ['y', 'n', 'a']:
-        add_confirmation = input(f'{prompt}\n')
+
+    if auto_confirm == 'y':
+        add_confirmation = 'y'
+    else:
+        question = (
+            f'Would you like to add the macro "{macro_name}"'
+            f' to the following location?:\n{location}'
+        )
+        prompt = (
+            'Please enter "y" to confirm macro addition,'
+            ' "n" to abort,'
+            ' or "a" to provide an alternate location.'
+        )
+        add_confirmation = input(f'{question}\n{prompt}\n')
+        while add_confirmation.lower() not in ['y', 'n', 'a']:
+            add_confirmation = input(f'{prompt}\n')
+
     if add_confirmation.lower() == 'n':
         logger.info('Macro addition aborted.')
         sys.exit()
