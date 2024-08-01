@@ -777,19 +777,19 @@ def _get_columns(ctx, resource_location, resource_dict, **kwargs):
     )
     if len(relevant_lines) >= 1:
         relevant_line = relevant_lines[-1]
-        columns = relevant_line.get(
+        columns_json = relevant_line.get(
             'msg',
             relevant_line.get('info', dict()).get('msg'),
         )
-        # In some version of dbt columns are not passed as valid json but as
-        # a string representation of a list
-        is_string_list = (
-            isinstance(columns, str)
-            and columns.startswith('[')
-            and columns.endswith(']')
+        is_valid_json = (
+            isinstance(columns_json, str)
+            and columns_json.startswith('[')
+            and columns_json.endswith(']')
         )
-        if is_string_list:
-            columns = ast.literal_eval(columns)
+        if is_valid_json:
+            columns = json.loads(columns_json)
+        else:
+            columns = ast.literal_eval(columns_json)
         return columns
 
 
